@@ -22,7 +22,7 @@ def synthesize_handwriting():
         os.system(command)
 
         # Return the generated SVG file
-        return send_file(output_filename, as_attachment=True, download_name='generated_handwriting.svg')
+        return send_file(f"{output_filename}.svg", as_attachment=True, download_name='generated_handwriting.svg')
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
