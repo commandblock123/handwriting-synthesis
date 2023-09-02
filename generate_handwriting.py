@@ -1,22 +1,26 @@
+import argparse
 from demo import Hand
 
-lines = [
-    "Now this is a story all about how",
-    "My life got flipped turned upside down",
-    "And I'd like to take a minute, just sit right there",
-    "I'll tell you how I became the prince of a town called Bel-Air",
-]
-biases = [.75 for i in lines]
-styles = [9 for i in lines]
-stroke_colors = ['red', 'green', 'black', 'blue']
-stroke_widths = [1, 2, 1, 2]
+def main():
+    parser = argparse.ArgumentParser(description="Perform handwriting synthesis.")
+    parser.add_argument('-lines', nargs='+', required=True, help='List of lines')
+    parser.add_argument('-style', type=int, required=True, help='Style for all lines')
+    parser.add_argument('-bias', type=float, required=True, help='Bias for all lines')
+    parser.add_argument('-stroke_color', required=True, help='Stroke color for all lines')
+    parser.add_argument('-stroke_width', type=int, required=True, help='Stroke width for all lines')
+    parser.add_argument('-output', required=True, help='Output SVG filename')
 
-hand = Hand()
-hand.write(
-    filename='img/usage_demo.svg',
-    lines=lines,
-    biases=biases,
-    styles=styles,
-    stroke_colors=stroke_colors,
-    stroke_widths=stroke_widths
-)
+    args = parser.parse_args()
+
+    hand = Hand()
+    hand.write(
+        filename=args.output,
+        lines=args.lines,
+        biases=[args.bias] * len(args.lines),
+        styles=[args.style] * len(args.lines),
+        stroke_colors=[args.stroke_color] * len(args.lines),
+        stroke_widths=[args.stroke_width] * len(args.lines)
+    )
+
+if __name__ == '__main__':
+    main()
