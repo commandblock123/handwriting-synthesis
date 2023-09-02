@@ -16,7 +16,7 @@ def synthesize_handwriting():
         output_filename = data.get('output_filename')
 
         # Run the handwriting synthesis script using os.system
-        command = f'python your_script.py -lines {" ".join(lines)} -style {style} -bias {bias} -stroke_color {stroke_color} -stroke_width {stroke_width} -output {output_filename}'
+        command = f'python generate_handwriting.py -lines {" ".join(lines)} -style {style} -bias {bias} -stroke_color {stroke_color} -stroke_width {stroke_width} -output {output_filename}'
 
 
         os.system(command)
