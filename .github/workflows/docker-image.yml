@@ -1,0 +1,33 @@
+name: Docker Image CI
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Get release title
+      run: |
+        RELEASE_TITLE=$(echo "${GITHUB_RELEASE}" | jq -r '.name')
+        echo "RELEASE_TITLE=$RELEASE_TITLE" >> $GITHUB_ENV
+    - name: Build and push Docker image
+      env:
+        RELEASE_TITLE: ${{ env.RELEASE_TITLE }}
+      run: |
+        docker build . --file Dockerfile --tag ghcr.io/${GITHUB_REPO}/$RELEASE_TITLE
+        docker login ghcr.io -u $GITHUB_ACTOR -p $GITHUB_TOKEN
+        docker push ghcr.io/${GITHUB_REPO}/$RELEASE_TITLE
+    - name: Update release assets
+      env:
+        RELEASE_TITLE: ${{ env.RELEASE_TITLE }}
+      run: |
+        curl -X PATCH \
+          https://api.github.com/repos/${GITHUB_REPO}/releases/${GITHUB_RELEASE_ID} \
+          -H 'Authorization: Bearer $GITHUB_TOKEN' \
+          -H 'Content-Type: application/json' \
+          -d '{"assets": [{"name": "docker-image", "label": "Docker Image", "url": "ghcr.io/${GITHUB_REPO}/$RELEASE_TITLE"}]}'
