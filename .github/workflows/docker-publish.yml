@@ -39,9 +39,8 @@ jobs:
         env:
           TAG_NAME: ${{ env.TAG_NAME }}
           REPO_OWNER: ${{ github.repository_owner }}
-          REPO_NAME: ${{ github.repository }}
         run: |
-          IMAGE_NAME=ghcr.io/${REPO_OWNER}/${REPO_NAME}:${TAG_NAME}
+          IMAGE_NAME=ghcr.io/${REPO_OWNER}/${github.repository}:${TAG_NAME//:/-}
           echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
 
       # Install the cosign tool except on PR
