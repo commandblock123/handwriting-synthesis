@@ -14,22 +14,16 @@ jobs:
     - name: Get release title
       run: |
         RELEASE_TITLE=$(echo "${GITHUB_RELEASE}" | jq -r '.name')
-        echo "RELEASE_TITLE=$RELEASE_TITLE" >> $GITHUB_ENV
+        echo "::set-env name=RELEASE_TITLE::${RELEASE_TITLE}"
     - name: Set GITHUB_REPO
       run: |
-        echo "GITHUB_REPO=${GITHUB_REPOSITORY}" >> $GITHUB_ENV
+        echo "::set-env name=GITHUB_REPO::${GITHUB_REPOSITORY}"
     - name: Build and push Docker image
-      env:
-        RELEASE_TITLE: ${{ env.RELEASE_TITLE }}
-        GITHUB_REPO: ${{ env.GITHUB_REPO }}
       run: |
         docker build . --file Dockerfile --tag ghcr.io/${GITHUB_REPO}/$RELEASE_TITLE
         docker login ghcr.io -u $GITHUB_ACTOR -p $GITHUB_TOKEN
         docker push ghcr.io/${GITHUB_REPO}/$RELEASE_TITLE
     - name: Update release assets
-      env:
-        RELEASE_TITLE: ${{ env.RELEASE_TITLE }}
-        GITHUB_REPO: ${{ env.GITHUB_REPO }}
       run: |
         curl -X PATCH \
           https://api.github.com/repos/${GITHUB_REPO}/releases/${GITHUB_RELEASE_ID} \
