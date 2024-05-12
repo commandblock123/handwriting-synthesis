@@ -30,6 +30,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Generate tag name
+        run: |
+          TAG_NAME=$(echo "${github.event.release.name}" | sed 's/[[:space:]]/-/g')
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+
+      - name: Set image name
+        env:
+          TAG_NAME: ${{ env.TAG_NAME }}
+        run: |
+          IMAGE_NAME=ghcr.io/${github.repository_owner}/${github.repository}:${TAG_NAME}
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
+
       # Install the cosign tool except on PR
       - name: Install cosign
         if: github.event_name != 'pull_request'
