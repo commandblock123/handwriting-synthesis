@@ -41,8 +41,7 @@ jobs:
           REPO_OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.repository }}
         run: |
-          IMAGE_NAME=ghcr.io/${REPO_OWNER}/${REPO_NAME}:${TAG_NAME//:/-}
-          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
+          IMAGE_NAME=ghcr.io/${REPO_OWNER}/${REPO_NAME}:${TAG_NAME//::/-}
 
       # Install the cosign tool except on PR
       - name: Install cosign
@@ -79,7 +78,8 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ghcr.io/commandblock123/handwriting-synthesis:${{ env.TAG_NAME }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
