@@ -32,8 +32,12 @@ jobs:
 
       - name: Generate tag name
         run: |
-          TAG_NAME=$(echo "${GITHUB_EVENT_RELEASE_NAME}" | sed 's/[[:space:]]/-/g')
-          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+          if [[ -z "${GITHUB_REF##*tags/*}" ]]; then
+            TAG_NAME=$(echo "${GITHUB_REF#refs/tags/}" | sed 's/[[:space:]]/-/g')
+            echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+          else
+            echo "TAG_NAME=latest" >> $GITHUB_ENV
+          fi
 
       - name: Set image name
         env:
@@ -41,7 +45,11 @@ jobs:
           REPO_OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.repository }}
         run: |
-          IMAGE_NAME=ghcr.io/${REPO_OWNER}/${REPO_NAME}:${TAG_NAME//::/-}
+          if [[ -z "${TAG_NAME}" ]]; then
+            echo "Error: TAG_NAME is not set"
+            exit 1
+          fi
+          IMAGE_NAME=ghcr.io/${REPO_OWNER}/${REPO_NAME}:${TAG_NAME}
 
       # Install the cosign tool except on PR
       - name: Install cosign
