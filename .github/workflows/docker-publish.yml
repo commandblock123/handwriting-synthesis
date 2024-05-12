@@ -8,7 +8,6 @@ name: add image to release
 on:
   release:
     types: [published]
-  workflow_dispatch:
 
 env:
   # Use docker.io for Docker Hub if empty
