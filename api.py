@@ -17,7 +17,7 @@ def synthesize_handwriting():
         output_filename = "output.svg"
 
         # Run the handwriting synthesis script using os.system
-        command = f'python generate_handwriting.py -text {text} -style {style} -bias {bias} -stroke_color {stroke_color} -stroke_width {stroke_width} -output {output_filename}'
+        command = f"python generate_handwriting.py -text {text} -style {style} -bias {bias} -stroke_color {stroke_color} -stroke_width {stroke_width} -output {output_filename}"
 
         os.system(command)
 
