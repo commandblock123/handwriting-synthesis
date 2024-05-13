@@ -6,3 +6,4 @@ RUN apt-get install -y python3
 RUN apt-get install -y python3-pip
 RUN ls
 RUN python setup2.py
+EXPOSE 8080
