@@ -3,7 +3,7 @@ import os
 
 url = ""
 
-text = ""
+text = "this is an example"
 
 body = {
     "text": text,
