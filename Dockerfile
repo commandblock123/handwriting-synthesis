@@ -1,5 +1,5 @@
 #FROM tensorflow/tensorflow:1.6.0-gpu-py3
-FROM python:3.9-slim
+FROM python:3.9-slim-buster
 WORKDIR /app
 COPY . .
 
