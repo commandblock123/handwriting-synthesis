@@ -8,5 +8,5 @@ RUN apt-get update
 RUN apt-get install -y python3.5
 RUN apt-get install -y python3.9
 RUN ls
-RUN python setup2.py
+RUN python3.9 setup2.py
 EXPOSE 8080
