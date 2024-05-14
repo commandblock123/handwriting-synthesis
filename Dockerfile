@@ -23,7 +23,8 @@ RUN conda config --set always_yes yes --set changeps1 no
 RUN conda update -q conda
 RUN conda create -n python3.5 python=3.5
 RUN /bin/bash -l -c "conda init bash && conda activate python3.5"
-RUN conda run -n python3.5 pip install -r requirements3.5.txt
+#RUN conda run -n python3.5 pip install -r requirements3.5.txt
+RUN conda run -n python3.5 pip install tensorflow==1.6.0
 
 RUN conda deactivate
 RUN python3.9 -m pip install -r requirements3.9.txt 
