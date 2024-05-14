@@ -23,7 +23,10 @@ RUN conda config --set always_yes yes --set changeps1 no
 RUN conda update -q conda
 RUN conda create -n python3.5 python=3.5
 RUN /bin/bash -l -c "conda init bash && conda activate python3.5"
-RUN conda install -f requirements3.5.txt
+RUN pip install --r requirements3.5.txt
+
+RUN conda deactivate
+RUN python3.9 -m pip install -r requirements3.9.txt
 
 
 #RUN python setup2.py
