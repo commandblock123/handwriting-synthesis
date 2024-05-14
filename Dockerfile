@@ -10,18 +10,19 @@ RUN apt-get update
 # RUN apt-get install -y python3-pip
 
 RUN apt-get install -y wget
-RUN mkdir -p ~/miniconda3
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
-RUN bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
-RUN echo 'export PATH=/root/miniconda3/bin:$PATH' >> ~/.bashrc
-RUN source ~/.bashrc
+# Install miniconda
+ENV CONDA_DIR /opt/conda
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda
+
+# Put conda in path so we can use conda activate
+ENV PATH=$CONDA_DIR/bin:$PATH
+
 RUN conda init bash
 RUN conda config --set always_yes yes --set changeps1 no
 RUN conda update -q conda
-RUN conda create -n myenv python=3.5 -r requirements3.5.txt
+RUN conda create -n python3.5 python=3.5 -r requirements3.5.txt
 
 
-RUN conda create -n myenv python=3.5 -r requirements3.5.txt
-
-RUN python setup2.py
+#RUN python setup2.py
 EXPOSE 8080
