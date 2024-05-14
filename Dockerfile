@@ -26,6 +26,7 @@ RUN /bin/bash -l -c "conda init bash && conda activate python3.5"
 #RUN conda run -n python3.5 pip install -r requirements3.5.txt
 
 RUN conda run -n python3.5 apt-get install -y build-essential
+RUN conda run -n python3.5 pip install protobuf==3.4.0
 RUN conda run -n python3.5 pip install tensorflow==1.6.0
 
 RUN conda deactivate
