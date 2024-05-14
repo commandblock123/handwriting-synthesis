@@ -25,7 +25,7 @@ RUN conda create -n python3.5 python=3.5
 RUN /bin/bash -l -c "conda init bash && conda activate python3.5"
 #RUN conda run -n python3.5 pip install -r requirements3.5.txt
 
-RUN conda run -n python3.5 yum install -y gcc
+RUN conda run -n python3.5 apt-get install -y gcc
 RUN conda run -n python3.5 pip install tensorflow==1.6.0
 
 RUN conda deactivate
