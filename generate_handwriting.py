@@ -19,7 +19,7 @@ def split_into_lines(text, max_chars_per_line):
 
 def main():
     parser = argparse.ArgumentParser(description="Perform handwriting synthesis.")
-    parser.add_argument('-text', help='Text to synthesize')
+    parser.add_argument('-text', required=True, help='Text to synthesize')
     parser.add_argument('-style', type=int, required=True, help='Style for all lines')
     parser.add_argument('-bias', type=float, required=True, help='Bias for all lines')
     parser.add_argument('-stroke_color', required=True, help='Stroke color for all lines')
