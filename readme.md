@@ -10,7 +10,7 @@ This repository provides a Dockerized implementation of the handwriting synthesi
 
 To get started, simply run the Docker container using the following command:
 ```bash
-docker run -it -p 8080:8080 ghcr.io/commandblock123/handwriting-synthesis:v1.0.0 bash
+docker run -p 8080:8080 ghcr.io/commandblock123/handwriting-synthesis:v1.0.0
 ```
 This will start the container and make the API available at http://localhost:8080.
 
@@ -18,11 +18,11 @@ This will start the container and make the API available at http://localhost:808
 
 To use the Handwriting Synthesis API, send a POST request to http://localhost:8080/synthesize_handwriting with the following parameters:
 
-text: The text to be synthesized into handwriting
-style: The style of handwriting to generate (0-12)
-bias: The bias of the handwriting (0-1)
-stroke_color: The color of the strokes
-stroke_width: The width of the strokes
+text: The text to be synthesized into handwriting <br>
+style: The style of handwriting to generate (0-12) <br>
+bias: The bias of the handwriting (0-1) <br>
+stroke_color: The color of the strokes <br>
+stroke_width: The width of the strokes <br>
 For example, using curl:
 
 ```bash
