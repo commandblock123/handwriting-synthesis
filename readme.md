@@ -10,7 +10,7 @@ This repository provides a Dockerized implementation of the handwriting synthesi
 
 To get started, simply run the Docker container using the following command:
 ```bash
-docker run -p 8080:8080 ghcr.io/commandblock123/handwriting-synthesis:v1.0.0
+docker run -p 8080:8080 ghcr.io/commandblock123/handwriting-synthesis:v1.0.0-alpha
 ```
 This will start the container and make the API available at http://localhost:8080.
 
