@@ -1,4 +1,5 @@
-import os
+import subprocess
+import shlex
 from flask import Flask, request, jsonify, send_file
 import re
 
@@ -42,10 +43,10 @@ def synthesize_handwriting():
             output_filename = "output.svg"
 
             # Run the handwriting synthesis script using os.system
-            command = "conda run -n python3.5 python generate_handwriting.py -text '{}' -style {} -bias {} -stroke_color '{}' -stroke_width {} -output '{}'".format(text, style, bias, stroke_color, stroke_width, output_filename)
+            cmd = ["conda", "run", "-n", "python3.5", "python", "generate_handwriting.py"]
+            args = ["-text", text, "-style", str(style), "-bias", str(bias), "-stroke_color", str(stroke_color), "-stroke_width", str(stroke_width), "-output", output_filename]
 
-
-            os.system(command)
+            process = subprocess.run(cmd + args, check=True)
 
             # Return the generated SVG file
             return send_file('{}'.format(output_filename), as_attachment=True)
