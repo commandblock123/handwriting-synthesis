@@ -1,8 +1,7 @@
 import requests
 import os
 
-#url = "http://127.0.0.1:8080/synthesize_handwriting"
-url = "https://f239-34-91-114-34.ngrok-free.app/synthesize_handwriting"
+url = "http://127.0.0.1:8080/synthesize_handwriting"
 
 text = input("Text? ")
 
