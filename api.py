@@ -44,7 +44,7 @@ def synthesize_handwriting():
 
             # Run the handwriting synthesis script using os.system
             cmd = ["conda", "run", "-n", "python3.5", "python", "generate_handwriting.py"]
-            args = ["-text", shlex.quote(text), "-style", shlex.quote(str(style)), "-bias", shlex.quote(str(bias)), "-stroke_color", shlex.quote(str(stroke_color)), "-stroke_width", shlex.quote(str(stroke_width)), "-output", shlex.quote(output_filename)]
+            args = ["-text", str(text), "-style", str(style), "-bias", str(bias), "-stroke_color", str(stroke_color), "-stroke_width", str(stroke_width), "-output", output_filename]
 
             process = subprocess.run(cmd + args, check=True)
 
