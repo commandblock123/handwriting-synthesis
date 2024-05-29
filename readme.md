@@ -16,22 +16,8 @@ This will start the container and make the API available at http://localhost:808
 
 ## Usage
 
-To use the Handwriting Synthesis API, send a POST request to http://localhost:8080/synthesize_handwriting with the following parameters:
-
-text: The text to be synthesized into handwriting <br>
-style: The style of handwriting to generate (0-12) <br>
-bias: The bias of the handwriting (0-1) <br>
-stroke_color: The color of the strokes <br>
-stroke_width: The width of the strokes <br>
-For example, using curl:
-
-```bash
-curl -X POST \
-  http://localhost:8080/synthesize_handwriting \
-  -H 'Content-Type: application/json' \
-  -d '{"text": "Hello, World!", "style": 5, "bias": 0.75, "stroke_color": "black", "stroke_width": 1}'
-```
-This will generate a SVG file with the synthesized handwriting and return it as a response. You can also see an example of an API request in the [example_api_request.py](example_api_request.py) file.
+For detailed information on how to use the Handwriting Synthesis API, please refer to the [API Documentation](API_Documentation.md).
+You can also see an example of an API request in the [example_api_request.py](example_api_request.py) file.
 
 ## Demonstrations
 
