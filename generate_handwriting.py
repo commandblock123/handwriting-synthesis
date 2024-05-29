@@ -28,7 +28,7 @@ def main():
 
     args = parser.parse_args()
 
-    lines = split_into_lines(args.text, 75)
+    lines = split_into_lines(args.text, 65)
 
     hand = Hand()
     hand.write(
