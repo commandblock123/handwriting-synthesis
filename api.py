@@ -61,11 +61,12 @@ def synthesize_handwriting():
             return jsonify({'error': f'Inputs are invalid. {message}'}), 400
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'An internal error occured.'}), 500
     
 @app.route("/ping")
 def ping():
     return "Pong!"
+
 
 if __name__ == '__main__':
     #app.run(debug=True)
