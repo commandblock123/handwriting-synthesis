@@ -6,3 +6,11 @@ data/processed
 logs
 predictions
 generated_handwriting.svg
+
+upgrade-env
+upgrade-try-1
+upgrade-try-3-env
+upgrade-try-4-env
+__pycache__
+
+logs_tf2

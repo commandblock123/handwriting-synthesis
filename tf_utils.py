@@ -1,90 +1,73 @@
 import tensorflow as tf
 
+def dense_layer(inputs, output_units, bias=True, activation=None, batch_norm_layer=None,
+                dropout_rate=None, scope='dense-layer', training=False):
+    """Applies a dense layer using tf.keras.layers.Dense."""
+    layer = tf.keras.layers.Dense(
+        units=output_units,
+        activation=None,  # Apply activation after potential BN
+        use_bias=bias,
+        name=scope
+    )
+    z = layer(inputs)
 
-def dense_layer(inputs, output_units, bias=True, activation=None, batch_norm=None,
-                dropout=None, scope='dense-layer', reuse=False):
-    """
-    Applies a dense layer to a 2D tensor of shape [batch_size, input_units]
-    to produce a tensor of shape [batch_size, output_units].
-    Args:
-        inputs: Tensor of shape [batch size, input_units].
-        output_units: Number of output units.
-        activation: activation function.
-        dropout: dropout keep prob.
-    Returns:
-        Tensor of shape [batch size, output_units].
-    """
-    with tf.variable_scope(scope, reuse=reuse):
-        W = tf.get_variable(
-            name='weights',
-            initializer=tf.contrib.layers.variance_scaling_initializer(),
-            shape=[shape(inputs, -1), output_units]
-        )
-        z = tf.matmul(inputs, W)
-        if bias:
-            b = tf.get_variable(
-                name='biases',
-                initializer=tf.constant_initializer(),
-                shape=[output_units]
-            )
-            z = z + b
+    if batch_norm_layer is not None:
+        z = batch_norm_layer(z, training=training)
 
-        if batch_norm is not None:
-            z = tf.layers.batch_normalization(z, training=batch_norm, reuse=reuse)
+    if activation is not None:
+        z = activation(z)
 
-        z = activation(z) if activation else z
-        z = tf.nn.dropout(z, dropout) if dropout is not None else z
-        return z
+    if dropout_rate is not None and dropout_rate > 0.0:
+        dropout_layer = tf.keras.layers.Dropout(rate=dropout_rate)
+        z = dropout_layer(z, training=training)
+
+    return z
 
 
 def time_distributed_dense_layer(
-        inputs, output_units, bias=True, activation=None, batch_norm=None,
-        dropout=None, scope='time-distributed-dense-layer', reuse=False):
-    """
-    Applies a shared dense layer to each timestep of a tensor of shape
-    [batch_size, max_seq_len, input_units] to produce a tensor of shape
-    [batch_size, max_seq_len, output_units].
+        inputs, output_units, bias=True, activation=None, batch_norm_layer=None,
+        dropout_rate=None, scope='time-distributed-dense-layer', training=False):
+    """Applies a shared dense layer to each timestep using TimeDistributed wrapper."""
+    dense = tf.keras.layers.Dense(
+        units=output_units,
+        activation=None, # Apply activation after potential BN
+        use_bias=bias
+    )
+    wrapper = tf.keras.layers.TimeDistributed(dense, name=scope)
+    z = wrapper(inputs)
 
-    Args:
-        inputs: Tensor of shape [batch size, max sequence length, ...].
-        output_units: Number of output units.
-        activation: activation function.
-        dropout: dropout keep prob.
+    # Apply BN/Dropout after TimeDistributed.
+    # Note: If BN/Dropout were intended per time-step with shared weights in TF1 cell,
+    # this implementation differs slightly. Usually applied after the sequence processing.
+    if batch_norm_layer is not None:
+        # Reshape for BN: (batch*time, features), apply BN, reshape back
+        input_shape = tf.shape(z)
+        reshaped_z = tf.reshape(z, [-1, output_units])
+        bn_z = batch_norm_layer(reshaped_z, training=training)
+        z = tf.reshape(bn_z, input_shape)
 
-    Returns:
-        Tensor of shape [batch size, max sequence length, output_units].
-    """
-    with tf.variable_scope(scope, reuse=reuse):
-        W = tf.get_variable(
-            name='weights',
-            initializer=tf.contrib.layers.variance_scaling_initializer(),
-            shape=[shape(inputs, -1), output_units]
-        )
-        z = tf.einsum('ijk,kl->ijl', inputs, W)
-        if bias:
-            b = tf.get_variable(
-                name='biases',
-                initializer=tf.constant_initializer(),
-                shape=[output_units]
-            )
-            z = z + b
+    if activation is not None:
+        z = activation(z)
 
-        if batch_norm is not None:
-            z = tf.layers.batch_normalization(z, training=batch_norm, reuse=reuse)
+    if dropout_rate is not None and dropout_rate > 0.0:
+        dropout_layer = tf.keras.layers.Dropout(rate=dropout_rate)
+        z = dropout_layer(z, training=training)
 
-        z = activation(z) if activation else z
-        z = tf.nn.dropout(z, dropout) if dropout is not None else z
-        return z
+    return z
 
 
 def shape(tensor, dim=None):
-    """Get tensor shape/dimension as list/int"""
+    """Get tensor shape/dimension as list/int (static shape)."""
+    static_shape = tensor.shape
     if dim is None:
-        return tensor.shape.as_list()
+        return static_shape.as_list()
     else:
-        return tensor.shape.as_list()[dim]
+        # Handle negative dim indexing
+        if dim < 0:
+             dim = len(static_shape) + dim
+        return static_shape[dim]
 
 
 def rank(tensor):
-    """Get tensor rank as python list"""
-    return len(tensor.shape.as_list())
+    """Get tensor rank as python int (static shape)."""
+    return tensor.shape.ndims
