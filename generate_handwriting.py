@@ -32,25 +32,28 @@ def main():
     parser.add_argument('-s', '--style', type=int, default=None, help='Style number (requires style-<N>-strokes.npy and style-<N>-chars.npy). If omitted, uses unprimed sampling.')
     parser.add_argument('-b', '--bias', type=float, default=0.75, help='Bias value for sampling (controls variability/randomness)')
     parser.add_argument('--stroke_color', default='black', help='Stroke color (e.g., "black", "blue", "#FF0000")')
-    parser.add_argument('--stroke_width', type=int, default=2, help='Stroke width in pixels')
+    parser.add_argument('--stroke_width', type=int, default=1, help='Stroke width in pixels')
     parser.add_argument('-o', '--output', required=True, help='Output SVG filename')
     parser.add_argument('--max_chars', type=int, default=65, help='Maximum characters per line before splitting')
     parser.add_argument('--checkpoint_dir', default='checkpoints_tf2', help='Directory containing model checkpoints')
 
     args = parser.parse_args()
 
+    generate(text=args.text, output_filename=args.output, style=args.style, bias=args.bias, stroke_color=args.stroke_color, stroke_width=args.stroke_width, max_chars=args.max_chars, checkpoint_dir=args.checkpoint_dir)
+
+def generate(text, output_filename, style=None, bias=0.75, stroke_color="black", stroke_width=1, max_chars=65, checkpoint_dir="checkpoints_tf2"):
     # Check if checkpoint directory exists
-    if not os.path.isdir(args.checkpoint_dir):
-        print(f"Error: Checkpoint directory not found: {args.checkpoint_dir}")
+    if not os.path.isdir(checkpoint_dir):
+        print(f"Error: Checkpoint directory not found: {checkpoint_dir}")
         print("Please ensure the model is trained or checkpoints are placed correctly.")
         return
 
     # Check if style files exist if a style is specified
-    if args.style is not None:
-        style_stroke_file = os.path.join('styles', f'style-{args.style}-strokes.npy')
-        style_char_file = os.path.join('styles', f'style-{args.style}-chars.npy')
+    if style is not None:
+        style_stroke_file = os.path.join('styles', f'style-{style}-strokes.npy')
+        style_char_file = os.path.join('styles', f'style-{style}-chars.npy')
         if not os.path.exists(style_stroke_file) or not os.path.exists(style_char_file):
-            print(f"Error: Style files not found for style {args.style}.")
+            print(f"Error: Style files not found for style {style}.")
             missing_files = []
             if not os.path.exists(style_stroke_file):
                 missing_files.append(style_stroke_file)
@@ -61,25 +64,25 @@ def main():
             return
 
     # Split text into lines
-    lines = split_into_lines(args.text, args.max_chars)
+    lines = split_into_lines(text, max_chars)
     if not lines:
         print("Warning: Input text resulted in zero lines after splitting.")
         # Create an empty SVG
-        dwg = svgwrite.Drawing(filename=args.output)
+        dwg = svgwrite.Drawing(filename=output_filename)
         dwg.viewbox(width=100, height=50)
         dwg.add(dwg.rect(insert=(0, 0), size=(100, 50), fill='white'))
         dwg.save()
-        print(f"Created empty SVG: {args.output}")
+        print(f"Created empty SVG: {output_filename}")
         return
 
 
     print(f"Number of lines: {len(lines)}")
-    print(f"Using style: {'Unprimed' if args.style is None else args.style}")
-    print(f"Using bias: {args.bias}")
+    print(f"Using style: {'Unprimed' if style is None else style}")
+    print(f"Using bias: {bias}")
 
     # Initialize Hand (loads the model)
     try:
-        hand = Hand(checkpoint_dir=args.checkpoint_dir)
+        hand = Hand(checkpoint_dir=checkpoint_dir)
     except ValueError as e:
         print(f"Error initializing Hand: {e}")
         return
@@ -92,23 +95,23 @@ def main():
 
     # Prepare arguments for hand.write
     num_lines = len(lines)
-    biases = [args.bias] * num_lines
-    styles = [args.style] * num_lines if args.style is not None else None
-    stroke_colors = [args.stroke_color] * num_lines
-    stroke_widths = [args.stroke_width] * num_lines
+    biases = [bias] * num_lines
+    styles = [style] * num_lines if style is not None else None
+    stroke_colors = [stroke_color] * num_lines
+    stroke_widths = [stroke_width] * num_lines
 
     # Generate handwriting
     print("Generating handwriting...")
     try:
         hand.write(
-            filename=args.output,
+            filename=output_filename,
             lines=lines,
             biases=biases,
             styles=styles,
             stroke_colors=stroke_colors,
             stroke_widths=stroke_widths
         )
-        print(f"Successfully generated {args.output}")
+        print(f"Successfully generated {output_filename}")
     except Exception as e:
         print(f"An error occurred during handwriting generation: {e}")
         import traceback

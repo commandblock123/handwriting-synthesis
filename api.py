@@ -1,6 +1,7 @@
 import subprocess
 from flask import Flask, request, jsonify, send_file
 import re
+import generate_handwriting
 
 app = Flask(__name__)
 
@@ -49,11 +50,8 @@ def synthesize_handwriting():
         if is_valid:
             output_filename = "output.svg"
 
-            # Run the handwriting synthesis script using os.system
-            cmd = ["conda", "run", "-n", "python3.5", "python", "generate_handwriting.py"]
-            args = ["-text", str(text), "-style", str(style), "-bias", str(bias), "-stroke_color", str(stroke_color), "-stroke_width", str(stroke_width), "-output", output_filename]
-
-            process = subprocess.run(cmd + args, check=True)
+            # Generate handwriting
+            generate_handwriting.generate(text=text, output_filename=output_filename, style=style, bias=bias, stroke_color=stroke_color, stroke_width=stroke_width)
 
             # Return the generated SVG file
             return send_file('{}'.format(output_filename), as_attachment=True)
